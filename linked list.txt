@@ -1,0 +1,65 @@
+#Head
+class Node(object):
+ 
+    def __init__(self, data=None, next_node=None):
+        self.data = data
+        self.next = next_node
+
+"""
+Detect a cycle in a linked list. Note that the head pointer may be 'None' if the list is empty.
+
+A Node is defined as: 
+ 
+    class Node(object):
+        def __init__(self, data = None, next_node = None):
+            self.data = data
+            self.next = next_node
+"""
+
+
+def has_cycle(head):
+    pass
+
+#Tail
+if __name__ == "__main__":
+
+    A = B = C = D = E = F = Node()
+
+    s = ""
+        
+    #Case 1
+    if has_cycle(Node()):
+      print(1)
+    else:
+      print(0)
+
+    #Case 2
+    A.next = B
+    B.next = C
+    C.next = A
+    if has_cycle(A):
+      print(1)
+    else:
+      print(0)
+
+    #Case 3
+    A.next = B; B.next = C; C.next = D; D.next = E; E.next = F; F.next = E
+    if has_cycle(A):
+      print(1)
+    else:
+      print(0)
+
+    #Case 4
+    A.next = B; B.next = C; C.next = D; D.next = E; E.next = F; F.next = None
+    if has_cycle(A):
+      print(1)
+    else:
+      print(0)
+
+    #Case5
+    A.next = B; B.next = C; C.next = D; D.next = E; E.next = F; F.next = A
+    if has_cycle(A):
+      print(1)
+    else:
+      print(0)
+    
