@@ -1,0 +1,120 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define HASH_SIZE 50021  // A prime number for a good hash distribution
+#define MAX_FORBIDDEN_LEN 10
+
+// Node for Hash Table Chaining
+typedef struct HashNode {
+    char str[MAX_FORBIDDEN_LEN + 1];
+    struct HashNode* next;
+} HashNode;
+
+
+typedef struct {
+    HashNode* buckets[HASH_SIZE];
+} HashTable;
+
+
+unsigned int hash(const char* str) {
+    unsigned int h = 0;
+    while (*str) {
+        h = (h * 31) + *str;
+        str++;
+    }
+    return h % HASH_SIZE;
+}
+
+
+void insert(HashTable* table, const char* str) {
+    unsigned int idx = hash(str);
+    HashNode* curr = table->buckets[idx];
+    
+    while (curr) {
+        if (strcmp(curr->str, str) == 0) return;
+        curr = curr->next;
+    }
+    
+    HashNode* newNode = (HashNode*)malloc(sizeof(HashNode));
+    strcpy(newNode->str, str);
+    newNode->next = table->buckets[idx];
+    table->buckets[idx] = newNode;
+}
+
+int search(HashTable* table, const char* str) {
+    unsigned int idx = hash(str);
+    HashNode* curr = table->buckets[idx];
+    while (curr) {
+        if (strcmp(curr->str, str) == 0) {
+            return 1; 
+        }
+        curr = curr->next;
+    }
+    return 0; 
+}
+
+void freeHashTable(HashTable* table) {
+    for (int i = 0; i < HASH_SIZE; i++) {
+        HashNode* curr = table->buckets[i];
+        while (curr) {
+            HashNode* temp = curr;
+            curr = curr->next;
+            free(temp);
+        }
+    }
+}
+
+
+int longestValidSubstring(char* word, char** forbidden, int forbiddenSize) {
+    HashTable table = {0};
+    
+    
+    for (int i = 0; i < forbiddenSize; i++) {
+        insert(&table, forbidden[i]);
+    }
+    
+    int n = strlen(word);
+    int maxLen = 0;
+    int left = 0;
+    
+    
+    for (int right = 0; right < n; right++) {
+        char temp[MAX_FORBIDDEN_LEN + 1];
+        
+        
+        for (int k = right; k >= left && (right - k + 1) <= MAX_FORBIDDEN_LEN; k--) {
+            int len = right - k + 1;
+            strncpy(temp, &word[k], len);
+            temp[len] = '\0';
+                       
+            if (search(&table, temp)) {
+                left = k + 1;
+                break; 
+            }
+        }
+        
+        int currentLen = right - left + 1;
+        if (currentLen > maxLen) {
+            maxLen = currentLen;
+        }
+    }
+    
+    freeHashTable(&table);
+    return maxLen;
+}
+
+int main() {
+    char word1[] = "cbaaaabc";
+    char* forbidden1[] = {"aaa", "cb"};
+    int result1 = longestValidSubstring(word1, forbidden1, 2);
+    printf("Example 1 Output: %d (Expected: 4)\n", result1);
+
+
+    char word2[] = "leetcode";
+    char* forbidden2[] = {"de", "le", "e"};
+    int result2 = longestValidSubstring(word2, forbidden2, 3);
+    printf("Example 2 Output: %d (Expected: 4)\n", result2);
+
+    return 0;
+}
