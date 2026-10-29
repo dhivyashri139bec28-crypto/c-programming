@@ -1,0 +1,34 @@
+class Solution:
+    def subStrHash(self, s: str, power: int, modulo: int, k: int, hashValue: int) -> str:
+        n = len(s)
+        def val(c):
+            return ord(c) - ord('a') + 1
+        current_hash = 0
+        p_k = 1
+
+
+        for _ in range(k):
+            p_k = (p_k * power) % modulo
+
+
+        p = 1
+        for i in range(n - k, n):
+            current_hash = (current_hash + val(s[i]) * p) % modulo
+            p = (p * power) % modulo
+
+        res_idx = -1
+        if current_hash == hashValue:
+            res_idx = n - k
+
+
+        for i in range(n - k - 1, -1, -1):
+
+            current_hash = (current_hash * power + val(s[i]) - val(s[i + k]) * p_k) % modulo
+
+
+            current_hash = (current_hash + modulo) % modulo
+
+            if current_hash == hashValue:
+                res_idx = i
+
+        return s[res_idx : res_idx + k]
